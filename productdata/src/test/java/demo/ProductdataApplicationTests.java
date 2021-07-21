@@ -3,13 +3,20 @@ package demo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.hibernate.criterion.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import demo.entities.Product;
@@ -102,6 +109,32 @@ class ProductdataApplicationTests {
 		products.forEach(p->System.out.println("product >>>>" +p.getName()));
 		
 		}
+	@Test
+	public void testFindAllpaging() {
+		Pageable pageable=PageRequest.of(1, 2);
+		Page<Product> results=repo.findAll(pageable);
+		results.forEach(p->System.out.println("Page>>>>>>" +p.getName()));
+	}
+	@Test
+	public void testFindAllSorting() {
+		Sort sort=Sort.by(Direction.DESC, "name","price");
+		/*List<Order> orders=new ArrayList<Order>();
+		Order order1=Order.desc("name");
+		orders.add(order1);
+		Order order2=Order.asc("desc");
+		orders.add(order2);
+		//Sort sort1=new Sort(orders);
+*/		//repo.findAll(Sort.by(Direction.DESC, "name").and(Sort.by(Direction.ASC,"desc"))).forEach(p->System.out.println("sorted>>"+p.getName()));
+		repo.findAll(Sort.by(new Sort.Order(Direction.DESC, "name"),new Sort.Order(Direction.ASC,"desc"))).forEach(p->System.out.println("sorted>>"+p.getName()));
+		
+	}
+	@Test
+	public void testFindAllpagingAndSorting() {
+		Pageable pageable=PageRequest.of(0, 2, Direction.DESC, "price");
+		Page<Product> results=repo.findAll(pageable);
+		results.forEach(p->System.out.println("Page>>>>>>" +p.getName()));
+	}
+	
 
 
 }
